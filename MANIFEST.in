@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include dehqaan *.css
+recursive-include dehqaan *.csv
+recursive-include dehqaan *.html
+recursive-include dehqaan *.ico
+recursive-include dehqaan *.js
+recursive-include dehqaan *.json
+recursive-include dehqaan *.md
+recursive-include dehqaan *.png
+recursive-include dehqaan *.py
+recursive-include dehqaan *.svg
+recursive-include dehqaan *.txt
+recursive-exclude dehqaan *.pyc
