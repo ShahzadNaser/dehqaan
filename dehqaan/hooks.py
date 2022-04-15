@@ -95,13 +95,57 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
+doc_events = {
+ 	"GL Entry": {
+ 		"validate": "dehqaan.dehqaan.gl_entry.update_payment_entry",
 # 		"on_cancel": "method",
 # 		"on_trash": "method"
-#	}
-# }
+	}
+}
+
+
+doctypes_list = ["Purchase Order", "Request for Quotation","Supplier Quotation","Material Request","Purchase Receipt","Project","Sales Order","Purchase Invoice"]
+
+fixtures = [
+    {"doctype": "Client Script", "filters": [
+        [
+            "dt", "in", doctypes_list
+        ]
+    ]},
+    {"doctype": "Property Setter", "filters": [
+        [
+            "doc_type", "in", doctypes_list
+        ]
+    ]},
+    {"doctype": "Custom Field", "filters": [
+        [
+            "dt", "in", doctypes_list
+        ]
+    ]},
+    {"doctype": "Workflow", "filters": [
+        [
+            "document_type", "in", doctypes_list
+        ]
+    ]},
+    {"doctype": "Notification", "filters": [
+        [
+            "document_type", "in", doctypes_list
+        ]
+    ]},
+    {"doctype": "Email Account", "filters": [
+        [
+            "email_id", "in", ['orders@northcorpgroup.com']
+        ]
+    ]},
+    {"doctype": "Print Format", "filters": [
+        [
+            "doc_type", "in", doctypes_list
+        ]
+    ]}
+
+
+]
+
 
 # Scheduled Tasks
 # ---------------
