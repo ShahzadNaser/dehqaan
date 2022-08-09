@@ -58,7 +58,7 @@ def execute(filters=None):
                         "outstanding": 0,'transaction_date':ss.transaction_date,'paid':0.0
                 })
 
-                payment_details = frappe.db.sql("""select purchase_order,sum(outstanding_amount) as outstanding
+                payment_details = frappe.db.sql("""select purchase_order,outstanding_amount as outstanding
                                             from `tabPurchase Invoice Item` pii
                                             inner join `tabPurchase Invoice` pi
                                             on pii.parent=pi.name
