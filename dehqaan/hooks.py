@@ -100,7 +100,10 @@ doc_events = {
  		"validate": "dehqaan.dehqaan.gl_entry.update_payment_entry",
 # 		"on_cancel": "method",
 # 		"on_trash": "method"
-	}
+	},
+        "Purchase Order":{
+                "validate": "dehqaan.dehqaan.gl_entry.set_project_user",
+        }
 }
 
 

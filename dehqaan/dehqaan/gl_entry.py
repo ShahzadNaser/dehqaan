@@ -12,4 +12,6 @@ def update_payment_entry(self, method):
                     self.cost_center = cost_center
                     self.project = project
 
-
+def set_project_user(self, method):
+    if not self.project_manager or self.project_manager == '':
+        self.project_manager = None
