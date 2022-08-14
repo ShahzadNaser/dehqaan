@@ -18,7 +18,8 @@ def execute(filters=None):
                 "indent": 0.0, "name":'Grand Total', "parent_department":'',
                         "department": '', "workflow_state": '', "project": '',
                         "project_name":'', "supplier_name": '', "grand_total":0.0,
-                        "outstanding": 0.0,'transaction_date':'','paid':0.0
+                        "outstanding": 0.0,'transaction_date':'','paid':0.0,
+                        "advance_paid":0.0,"invoiced":0.0
                 })
     
     blank_totals = frappe._dict({})
@@ -26,7 +27,8 @@ def execute(filters=None):
                 "indent": 0.0, "name":'', "parent_department":'',
                         "department": '', "workflow_state": '', "project": '',
                         "project_name":'', "supplier_name": '', "grand_total":'',
-                        "outstanding": 0.0,'transaction_date':'','paid':0.0
+                        "outstanding": 0.0,'transaction_date':'','paid':0.0,
+                        "advance_paid":0.0,"invoiced":0.0
 
                 })
 
@@ -43,8 +45,8 @@ def execute(filters=None):
                 "indent": 0.0, "name":'Total', "parent_department":'',
                         "department": '', "workflow_state": '', "project": '',
                         "project_name":'', "supplier_name": '', "grand_total":0.0,
-                        "outstanding": 0.0,'transaction_date':'','paid':0.0
-
+                        "outstanding": 0.0,'transaction_date':'','paid':0.0,
+                        "advance_paid":0.0,"invoiced":0.0
                 })
 
         for ss in order_details:
@@ -55,33 +57,40 @@ def execute(filters=None):
 			"indent": 1.0, "name": ss.name, "parent_department": ss.cost_center,
 			"department": '', "workflow_state": ss.workflow_state, "project": ss.project,
 			"project_name": ss.project_name, "supplier_name": ss.supplier_name, "grand_total": ss.grand_total,
-                        "outstanding": 0,'transaction_date':ss.transaction_date,'paid':0.0
+                        "outstanding": 0,'transaction_date':ss.transaction_date,'paid':0.0,'advance_paid':ss.advance_paid,
+                        "invoiced":0.0
                 })
 
-                payment_details = frappe.db.sql("""select purchase_order,outstanding_amount as outstanding
+                payment_details = frappe.db.sql("""select distinct pi.name,pi.grand_total,pi.outstanding_amount as outstanding
                                             from `tabPurchase Invoice Item` pii
                                             inner join `tabPurchase Invoice` pi
                                             on pii.parent=pi.name
-                                            where purchase_order = '%s'
-                                            group by purchase_order"""%ss.name,as_dict=1)
-                payment_amount = 0
+                                            where pi.docstatus = 1
+                                            and purchase_order = '%s'
+                                            """%ss.name,as_dict=1)
+                grand_total = 0
+                outstanding_amount = 0
                 if payment_details:
                     for payment in payment_details:
-                        payment_amount = ss.grand_total - payment.outstanding
+                        grand_total = grand_total = grand_total + payment.grand_total 
+                        outstanding_amount = outstanding_amount + payment.outstanding
 
-                temp.paid = payment_amount
-                if temp.paid == 0:
-                    if ss.advance_paid:
-                        temp.paid = ss.advance_paid
+                temp.advance_paid = ss.advance_paid
+                temp.invoiced = grand_total
+            
+                total_paid = grand_total - outstanding_amount
+                temp.paid = total_paid
 
                 data.append(temp)
-                totals.grand_total += ss.grand_total
-                totals.outstanding += ss.outstanding
-                totals.paid += temp.paid
+                totals.invoiced += grand_total
+                totals.paid += total_paid
+                totals.advance_paid += temp.advance_paid 
 
-                department_totals.paid += temp.paid
-                department_totals.grand_total += ss.grand_total
-                department_totals.outstanding += ss.outstanding
+                department_totals.paid += total_paid
+                department_totals.advance_paid += temp.advance_paid
+                department_totals.invoiced += temp.invoiced
+
+
         #data.append(blank_totals)
         data.append(department_totals)
     
@@ -141,9 +150,21 @@ def get_columns():
                         
                 },
                 {
-                        "fieldname":"paid",
-                        "label": "Paid Amount",
+                        "fieldname":"advance_paid",
+                        "label": "Advance Paid",
                         "width": 120,
+                        "fieldtype": "Currency"
+                },
+                {
+                        "fieldname":"invoiced",
+                        "label": "Invoiced Amount",
+                        "width": 140,
+                        "fieldtype": "Currency"
+                },
+                {
+                        "fieldname":"paid",
+                        "label": "Total Paid Amount",
+                        "width": 140,
                         "fieldtype": "Currency"
                 }
 
