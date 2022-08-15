@@ -85,11 +85,12 @@ def execute(filters=None):
                 totals.invoiced += grand_total
                 totals.paid += total_paid
                 totals.advance_paid += temp.advance_paid 
+                totals.grand_total += ss.grand_total
 
                 department_totals.paid += total_paid
                 department_totals.advance_paid += temp.advance_paid
                 department_totals.invoiced += temp.invoiced
-
+                department_totals.grand_total += ss.grand_total
 
         #data.append(blank_totals)
         data.append(department_totals)
