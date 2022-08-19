@@ -79,6 +79,10 @@ def execute(filters=None):
                 temp.invoiced = grand_total
             
                 total_paid = grand_total - outstanding_amount
+
+                if total_paid <= temp.advance_paid:
+                    total_paid = temp.advance_paid
+
                 temp.paid = total_paid
 
                 data.append(temp)
@@ -154,7 +158,8 @@ def get_columns():
                         "fieldname":"advance_paid",
                         "label": "Advance Paid",
                         "width": 120,
-                        "fieldtype": "Currency"
+                        "fieldtype": "Currency",
+                        "hidden":1
                 },
                 {
                         "fieldname":"invoiced",
